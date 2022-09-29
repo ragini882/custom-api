@@ -3,10 +3,14 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Auth\AuthenticationException;
+use App\Traits\ResponseTrait;
 use Throwable;
 
 class Handler extends ExceptionHandler
 {
+    use ResponseTrait;
+
     /**
      * A list of exception types with their corresponding custom log levels.
      *
@@ -46,5 +50,28 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+    }
+
+    protected function unauthenticated($request, AuthenticationException $exception)
+    {
+        return $this->sendUnauthorizedResponse();
+    }
+
+    /**
+     * Render an exception into an HTTP response.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Throwable  $exception
+     * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @throws \Throwable
+     */
+    public function render($request, Throwable $exception)
+    {
+        // //TODO: Fix the logic to log exception
+        // if ($exception instanceof AuthenticationException) {
+        //     return $this->unauthenticated($request, $exception);
+        // }
+        return $this->prepareJsonResponse($request, $exception);
     }
 }

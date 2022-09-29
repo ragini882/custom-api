@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
 {
-    public function register(RegistrationRequest $request)
+    public function otpRegistration(RegistrationRequest $request)
     {
 
         $input = $request->all();
