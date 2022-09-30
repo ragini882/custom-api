@@ -16,7 +16,11 @@ use App\Http\Controllers\RegisterController;
 */
 
 Route::prefix('v1')->group(function () {
-    Route::group(['prefix' => 'register'], function () {
-        Route::post('otp', [RegisterController::class, 'otpRegistration']);
+    Route::post('register', [RegisterController::class, 'registration']);
+    Route::post('login', [RegisterController::class, 'login']);
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('send-otp', [RegisterController::class, 'sendOtp']);
+        Route::post('verify-otp', [RegisterController::class, 'verifyOtp']);
     });
 });

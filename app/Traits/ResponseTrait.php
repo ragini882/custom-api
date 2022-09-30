@@ -6,6 +6,8 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 
 trait ResponseTrait
 {
+    private $status_ok = 200;
+    private $status_bad_request = 400;
     private $status_validation_failed = 422;
     private $status_unauthorized = 401;
     private $status_forbidden = 403;
@@ -47,6 +49,66 @@ trait ResponseTrait
                 "data" => (object)[],
             ],
             $this->status_unauthorized
+        );
+    }
+
+    /**
+     * Returns http Ok response with 200 status code
+     * 
+     * @param string $message
+     * @param array|object  (optional) $data
+     * @param int (optional) $code
+     * 
+     * @returns \Illuminate\Http\JsonResponse
+     */
+    public function sendSuccessResponse($message, $data = null, $code = null)
+    {
+        return $this->sendJsonResponse(
+            [
+                "code" => $code ?? $this->status_ok,
+                "message" => $message,
+                "data" => $data ?? (object)[],
+            ],
+            $this->status_ok
+        );
+    }
+
+    /**
+     * Returns http bad request response with 400 status code
+     * 
+     * @param string $message
+     * @param array|object  (optional) $data
+     * @param int (optional) $code
+     * 
+     * @returns \Illuminate\Http\JsonResponse
+     */
+    public function sendBadRequestResponse($message, $data = null, $code = null)
+    {
+        return $this->sendJsonResponse(
+            [
+                "code" => $code ?? $this->status_bad_request,
+                "message" => $message,
+                "data" => $data ?? (object)[],
+            ],
+            $this->status_bad_request
+        );
+    }
+
+    /**
+     * Returns JSON response for http request
+     * 
+     * @param array $data
+     * @param int $status_code
+     * 
+     * @returns \Illuminate\Http\JsonResponse
+     */
+    private function sendJsonResponse($data, $status_code)
+    {
+        return response()->json(
+            $data,
+            $status_code,
+            [],
+            JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION | JSON_UNESCAPED_SLASHES
         );
     }
 }

@@ -68,10 +68,10 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
-        // //TODO: Fix the logic to log exception
-        // if ($exception instanceof AuthenticationException) {
-        //     return $this->unauthenticated($request, $exception);
-        // }
+        //TODO: Fix the logic to log exception
+        if ($exception instanceof AuthenticationException) {
+            return $this->unauthenticated($request, $exception);
+        }
         return $this->prepareJsonResponse($request, $exception);
     }
 }

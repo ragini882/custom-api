@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\validator as Validator;
 use App\Traits\ResponseTrait;
 
-class RegistrationRequest extends FormRequest
+class VerifyOtpRequest extends FormRequest
 {
     use ResponseTrait;
 
@@ -18,11 +18,7 @@ class RegistrationRequest extends FormRequest
     public function rules()
     {
         return [
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'email' => 'required|email|unique:users',
-            'password' => 'required',
-            'verify_password' => 'required|same:password',
+            'otp' => 'required'
         ];
     }
 
