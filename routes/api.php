@@ -18,9 +18,11 @@ use App\Http\Controllers\RegisterController;
 Route::prefix('v1')->group(function () {
     Route::post('register', [RegisterController::class, 'registration']);
     Route::post('login', [RegisterController::class, 'login']);
+    Route::post('forgot-password', [RegisterController::class, 'forgotPassword']);
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('send-otp', [RegisterController::class, 'sendOtp']);
         Route::post('verify-otp', [RegisterController::class, 'verifyOtp']);
+        Route::post('reset-password', [RegisterController::class, 'resetPassword']);
     });
 });

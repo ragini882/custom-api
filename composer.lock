@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "332c3d77ef220e8f007d30adb4e17a37",
+    "content-hash": "4506965bf5e373e5ef30ed555ae7308e",
     "packages": [
         {
             "name": "brick/math",
@@ -420,6 +420,69 @@
                 }
             ],
             "time": "2022-09-10T18:51:20+00:00"
+        },
+        {
+            "name": "dwolla/dwollaswagger",
+            "version": "1.7.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Dwolla/dwolla-swagger-php.git",
+                "reference": "819e529b710e9c25dcf65fff07e482dc3c62830a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Dwolla/dwolla-swagger-php/zipball/819e529b710e9c25dcf65fff07e482dc3c62830a",
+                "reference": "819e529b710e9c25dcf65fff07e482dc3c62830a",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0",
+                "satooshi/php-coveralls": "~0.6.1",
+                "squizlabs/php_codesniffer": "~2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "DwollaSwagger\\": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Swagger and contributors",
+                    "homepage": "https://github.com/swagger-api/swagger-codegen"
+                },
+                {
+                    "name": "David Stancu",
+                    "homepage": "https://github.com/mach-kernel"
+                },
+                {
+                    "name": "Dwolla",
+                    "email": "api@dwolla.com",
+                    "homepage": "https://developers.dwolla.com/"
+                }
+            ],
+            "homepage": "http://developers.dwolla.com/",
+            "keywords": [
+                "api",
+                "php",
+                "sdk",
+                "swagger"
+            ],
+            "support": {
+                "issues": "https://github.com/Dwolla/dwolla-swagger-php/issues",
+                "source": "https://github.com/Dwolla/dwolla-swagger-php/tree/1.7.1"
+            },
+            "time": "2022-09-28T19:37:28+00:00"
         },
         {
             "name": "egulias/email-validator",
