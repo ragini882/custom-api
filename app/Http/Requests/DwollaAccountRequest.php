@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\validator as Validator;
 use App\Traits\ResponseTrait;
 
-class RegistrationRequest extends FormRequest
+class DwollaAccountRequest extends FormRequest
 {
     use ResponseTrait;
 
@@ -18,12 +18,14 @@ class RegistrationRequest extends FormRequest
     public function rules()
     {
         return [
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'email' => 'required|email|unique:users',
-            'password' => 'required',
-            'verify_password' => 'required|same:password',
-            'account_type' => 'required',
+            'legal_first_name' => 'required',
+            'legal_last_name' => 'required',
+            'dob' => 'required|date',
+            'ssn' => 'required',
+            'street_address' => 'required',
+            'city' => 'required',
+            'state' => 'required',
+            'zip_code' => 'required',
         ];
     }
 

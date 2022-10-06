@@ -22,7 +22,9 @@ return new class extends Migration
             $table->string('code')->nullable();
             $table->string('phone', 20)->nullable();
             $table->unsignedInteger('otp')->nullable();
-            $table->boolean('is_verified')->default(0); /* 1=verified, 0=unverified */
+            $table->boolean('is_phone_verified')->default(0); /* 1=verified, 0=unverified */
+            $table->boolean('is_account_verified')->default(0); /* 1=verified, 0=unverified */
+            $table->enum('account_type', ['PERSONAL', 'BUSINESS']);
             $table->rememberToken();
             $table->timestamps();
         });
@@ -31,6 +33,15 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('user_id')->unsigned();
             $table->uuid('customer_uuid');
+            $table->string('legal_first_name');
+            $table->string('legal_last_name');
+            $table->date('dob');
+            $table->string('ssn');
+            $table->string('street_address');
+            $table->string('address_type');
+            $table->string('city');
+            $table->string('state');
+            $table->string('zip_code');
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users');
         });

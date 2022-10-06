@@ -8,6 +8,7 @@ use App\Http\Requests\SendOtpRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\forgotPasswordRequest;
 use App\Http\Requests\ResetPasswordRequest;
+use App\Http\Requests\DwollaAccountRequest;
 use App\Models\User;
 use App\Models\UserDwollaAccount;
 use App\Traits\ResponseTrait;
@@ -26,7 +27,8 @@ class RegisterController extends Controller
             'first_name' => $request->input('first_name'),
             'last_name' => $request->input('last_name'),
             'email' => $request->input('email'),
-            'password' => bcrypt($request->input('password'))
+            'password' => bcrypt($request->input('password')),
+            'account_type' => $request->input('account_type')
         ];
 
         $user = User::create($data);
@@ -56,15 +58,9 @@ class RegisterController extends Controller
         if (is_null($user)) {
             return $this->sendBadRequestResponse('Invalid OTP. Please try again.');
         }
-        if (!$user->is_verified) {
-            $customer = $this->createCustomer($user);
-            $user_dwolla_account = new UserDwollaAccount;
-            $user_dwolla_account->user_id = $user->id;
-            $user_dwolla_account->customer_uuid = $customer->uuid;
-            $user_dwolla_account->save();
-        }
+
         $user->otp = null;
-        $user->is_verified = 1;
+        $user->is_phone_verified = 1;
         $user->save();
         return $this->sendSuccessResponse('otp verified successfully.', $user);
     }
@@ -75,7 +71,7 @@ class RegisterController extends Controller
             'code' => $request->input('phone_country_code'),
             'phone' => $request->input('phone'),
             'password' => $request->input('password'),
-            'is_verified' => 1
+            'is_phone_verified' => 1
         ];
 
         if (Auth::attempt($data)) {
@@ -109,5 +105,48 @@ class RegisterController extends Controller
         $user->password = bcrypt($request->input('password'));
         $user->save();
         return $this->sendSuccessResponse('Password has been changed successfully.', $user);
+    }
+
+    public function createDwollaAccount(DwollaAccountRequest $request)
+    {
+        $auth_user = auth()->user();
+        if (!$auth_user->is_account_verified) {
+            $user = [
+                "firstName" => $request->input('legal_first_name'),
+                "lastName" => $request->input('legal_last_name'),
+                "email" => $auth_user->email,
+                "type" => strtolower($auth_user->account_type),
+                "address1" => $request->input('street_address'),
+                "address2" => $request->input('address_type'),
+                "city" => $request->input('city'),
+                "state" => $request->input('state'),
+                "postalCode" => $request->input('zip_code'),
+                "dateOfBirth" => date("Y-m-d", strtotime($request->input('dob'))),
+                "ssn" => $request->input('ssn')
+            ];
+
+            $customer = $this->createCustomer($user);
+            $user_dwolla_account = new UserDwollaAccount;
+            $user_dwolla_account->user_id = $auth_user->id;
+            $user_dwolla_account->customer_uuid = $customer->uuid;
+            $user_dwolla_account->legal_first_name = $user['firstName'];
+            $user_dwolla_account->legal_last_name = $user['lastName'];
+            $user_dwolla_account->dob = $user['dateOfBirth'];
+            $user_dwolla_account->ssn = $user['ssn'];
+            $user_dwolla_account->street_address = $user['address1'];
+            $user_dwolla_account->address_type = $user['address2'];
+            $user_dwolla_account->city = $user['city'];
+            $user_dwolla_account->state = $user['state'];
+            $user_dwolla_account->zip_code = $user['postalCode'];
+            $user_dwolla_account->save();
+
+            $user = User::where('id', $auth_user->id)->first();
+            $user->is_account_verified = 1;
+            $user->save();
+            $user['user_account'] = $user_dwolla_account;
+            return $this->sendSuccessResponse('Account verified successfully.', $user);
+        } else {
+            return $this->sendBadRequestResponse('Account is already verified');
+        }
     }
 }

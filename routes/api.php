@@ -24,5 +24,6 @@ Route::prefix('v1')->group(function () {
         Route::post('send-otp', [RegisterController::class, 'sendOtp']);
         Route::post('verify-otp', [RegisterController::class, 'verifyOtp']);
         Route::post('reset-password', [RegisterController::class, 'resetPassword']);
+        Route::post('create-user-account', [RegisterController::class, 'createDwollaAccount']);
     });
 });

@@ -18,21 +18,14 @@ trait DwollaTrait
 
         # set access token
         $tokensApi = new DwollaSwagger\TokensApi($this->apiClient);
+
         DwollaSwagger\Configuration::$access_token = $tokensApi->token()->access_token;
     }
 
     public function createCustomer($user_data)
     {
         $customersApi = new DwollaSwagger\CustomersApi($this->apiClient);
-
-        $customer = $customersApi->create([
-            "firstName" => $user_data->first_name,
-            "lastName" => $user_data->last_name,
-            "email" => $user_data->email,
-            "type" => "receive-only",
-            //"businessName" => "Jane Corp llc"
-            // "ipAddress" => "99.99.99.99"
-        ]);
+        $customer = $customersApi->create($user_data);
         $response = explode('/', parse_url((string)$customer, PHP_URL_PATH));
         return (object)[
             "type" => $response[1],
