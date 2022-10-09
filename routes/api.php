@@ -2,7 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CustomerAccountController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,14 +17,16 @@ use App\Http\Controllers\RegisterController;
 */
 
 Route::prefix('v1')->group(function () {
-    Route::post('register', [RegisterController::class, 'registration']);
-    Route::post('login', [RegisterController::class, 'login']);
-    Route::post('forgot-password', [RegisterController::class, 'forgotPassword']);
+    Route::post('register', [AuthController::class, 'registration']);
+    Route::post('login', [AuthController::class, 'login']);
+    Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
 
     Route::middleware('auth:sanctum')->group(function () {
-        Route::post('send-otp', [RegisterController::class, 'sendOtp']);
-        Route::post('verify-otp', [RegisterController::class, 'verifyOtp']);
-        Route::post('reset-password', [RegisterController::class, 'resetPassword']);
-        Route::post('create-user-account', [RegisterController::class, 'createDwollaAccount']);
+        Route::post('send-otp', [AuthController::class, 'sendOtp']);
+        Route::post('verify-otp', [AuthController::class, 'verifyOtp']);
+        Route::post('reset-password', [AuthController::class, 'resetPassword']);
+
+        Route::post('create-user-account', [CustomerAccountController::class, 'createDwollaAccount']);
+        Route::post('add-user-bank', [CustomerAccountController::class, 'addUserBank']);
     });
 });

@@ -32,4 +32,15 @@ trait DwollaTrait
             "uuid" => $response[2]
         ];
     }
+
+    public function addBank($bank_data, $customer_uuid)
+    {
+        $fundingApi = new DwollaSwagger\FundingsourcesApi($this->apiClient);
+        $fundingSource = $fundingApi->createCustomerFundingSource($bank_data, config('app.dwolla.url') . "/customers/" . $customer_uuid);
+        $response = explode('/', parse_url((string)$fundingSource, PHP_URL_PATH));
+        return (object)[
+            "type" => $response[1],
+            "uuid" => $response[2]
+        ];
+    }
 }

@@ -7,7 +7,7 @@ use Illuminate\Contracts\Validation\validator as Validator;
 use Brick\PhoneNumber\PhoneNumber;
 use App\Traits\ResponseTrait;
 
-class forgotPasswordRequest extends FormRequest
+class ForgotPasswordRequest extends FormRequest
 {
     use ResponseTrait;
 

@@ -29,7 +29,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('user_dwolla_accounts', function (Blueprint $table) {
+        Schema::create('user_accounts', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_id')->unsigned();
             $table->uuid('customer_uuid');
@@ -38,12 +38,24 @@ return new class extends Migration
             $table->date('dob');
             $table->string('ssn');
             $table->string('street_address');
-            $table->string('address_type');
+            $table->string('address_type')->nullable();
             $table->string('city');
             $table->string('state');
             $table->string('zip_code');
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users');
+        });
+
+        Schema::create('user_banks', function (Blueprint $table) {
+            $table->id();
+            $table->bigInteger('user_account_id')->unsigned();
+            $table->uuid('funding_source_uuid');
+            $table->string('routing_number')->nullable();
+            $table->string('account_number')->nullable();
+            $table->string('bank_account_type')->nullable();
+            $table->string('plaid_token')->nullable();
+            $table->timestamps();
+            $table->foreign('user_account_id')->references('id')->on('user_accounts');
         });
     }
 
@@ -55,5 +67,7 @@ return new class extends Migration
     public function down()
     {
         Schema::dropIfExists('users');
+        Schema::dropIfExists('user_accounts');
+        Schema::dropIfExists('user_banks');
     }
 };
