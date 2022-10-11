@@ -1,0 +1,91 @@
+https://plaid.com/docs/link/link-token-migration-guide/
+
+------>for create link token<-----------
+->this can handle mobile side as well
+
+1.http://127.0.0.1:8000/api/v1/plaid/get-link-token
+
+curl -X POST https://development.plaid.com/link/token/create \
+-H 'Content-Type: application/json' \
+-d '{
+  "client_id": "CLIENT_ID",
+  "secret": "SECRET",
+  "client_name": "Plaid Test App",
+  "user": { "client_user_id": "user-id" },
+  "products": ["auth"],
+  "country_codes": ["US"],
+  "language": "en",
+  "webhook": "https://c292-103-249-233-56.ngrok.io/api/v1/webhook/get-auth",
+  "redirect_uri": "https://c292-103-249-233-56.ngrok.io"
+}'
+
+-----------response------
+{
+    "expiration": "2022-10-11T07:39:38Z",
+    "link_token": "link-development-b98e27aa-aa86-4006-9929-1a7199b051d1",
+    "request_id": "GcfLGanXq47aPzq"
+}
+-------------------------
+
+---->verify username and password from mobile with "link_token"
+
+---->get "account_id" in webhook
+ 
+---->for webhook callback<-----
+2.http://127.0.0.1:8000/api/v1/plaid/get-auth-webhook
+
+{
+  "webhook_type": "AUTH",
+  "webhook_code": "AUTOMATICALLY_VERIFIED",
+  "item_id": "eVBnVMp7zdTJLkRNr33Rs6zr7KNJqBFL9DrE6",
+  "account_id": "dVzbVMLjrxTnLjX4G66XUp5GLklm4oiZy88yK",
+  "environment": "production"
+}
+=>we will store "account_id" in database
+
+3.http://127.0.0.1:8000/api/v1/plaid/add-user-bank
+->mobile will provide "public_token" in request
+
+curl -X POST https://development.plaid.com/item/public_token/exchange \
+-H 'Content-Type: application/json' \
+-d '{
+  "client_id": "CLIENT_ID",
+  "secret": "SECRET",
+  "public_token": "PUBLIC_TOKEN"
+}'
+  
+==>will get 
+{
+  "access_token": "access-sandbox-de3ce8ef-33f8-452c-a685-8671031fc0f6",
+  "item_id": "M5eVJqLnv3tbzdngLDp9FL5OlDNxlNhlE55op",
+  "request_id": "Aim3b"
+}
+
+--->set "account_id" which store in database from webhook
+curl -X POST https://development.plaid.com/processor/token/create \
+-H 'Content-Type: application/json' \
+-d '{
+  "client_id": "CLIENT_ID",
+  "secret": "SECRET",
+  "access_token": "ACCESS_TOKEN",
+  "account_id": "ACCOUNT_ID",
+  "processor": "dwolla"
+}'
+
+==>will get 
+{
+  "processor_token": "processor-sandbox-0asd1-a92nc",
+  "request_id": "xrQNYZ7Zoh6R7gV"
+}
+
+
+->we can add bank with dwolla with "processor_token"
+->we can pass "processor_token" in "plaidToken" in dwolla
+[
+ "plaidToken" => "processor_token",
+ "name" => "user_name"
+];
+->bank will add successfully
+
+
+
