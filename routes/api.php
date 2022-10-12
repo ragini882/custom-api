@@ -28,5 +28,9 @@ Route::prefix('v1')->group(function () {
 
         Route::post('create-user-account', [CustomerAccountController::class, 'createDwollaAccount']);
         Route::post('add-user-bank', [CustomerAccountController::class, 'addUserBank']);
+
+        Route::post('get-link-token', [CustomerAccountController::class, 'getLinkToken']);
     });
+
+    Route::post('get-account-id', [CustomerAccountController::class, 'getAccountId']);
 });

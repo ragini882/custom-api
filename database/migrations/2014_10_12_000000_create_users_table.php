@@ -52,6 +52,7 @@ return new class extends Migration
             $table->uuid('funding_source_uuid');
             $table->string('routing_number')->nullable();
             $table->string('account_number')->nullable();
+            $table->string('account_id')->nullable();
             $table->string('bank_account_type')->nullable();
             $table->string('plaid_token')->nullable();
             $table->timestamps();

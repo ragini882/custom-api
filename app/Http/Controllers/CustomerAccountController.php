@@ -9,10 +9,13 @@ use App\Models\UserAccount;
 use App\Models\UserBank;
 use App\Traits\ResponseTrait;
 use App\Traits\DwollaTrait;
+use App\Traits\PlaidTrait;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Log;
 
 class CustomerAccountController extends Controller
 {
-    use ResponseTrait, DwollaTrait;
+    use ResponseTrait, DwollaTrait, PlaidTrait;
 
     public function createDwollaAccount(DwollaAccountRequest $request)
     {
@@ -92,5 +95,24 @@ class CustomerAccountController extends Controller
             $user_bank->save();
         }
         return $this->sendSuccessResponse('Bank has been added successfully.', $user_bank);
+    }
+
+    public function getLinkToken()
+    {
+        $auth_user = auth()->user();
+        $linkToken = $this->createLinkToken($auth_user->userAccount);
+        return $this->sendSuccessResponse('Link token has been generated successfully.', $linkToken);
+    }
+
+    public function getAccountId(Request $request)
+    {
+        //TODO:: need to store account id in database from $request->accountid
+    }
+
+    public function addUserBankInstant(Request $request)
+    {
+        //TODO:: call access token 
+        //TODO:: call process token with access token and account_id
+        //TODO :: call dwolla add bank with process token 
     }
 }
