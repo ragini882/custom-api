@@ -37,10 +37,28 @@ trait DwollaTrait
     {
         $fundingApi = new DwollaSwagger\FundingsourcesApi($this->apiClient);
         $fundingSource = $fundingApi->createCustomerFundingSource($bank_data, config('app.dwolla.url') . "/customers/" . $customer_uuid);
+        $this->addMicroDeposits($fundingSource);
         $response = explode('/', parse_url((string)$fundingSource, PHP_URL_PATH));
-        return (object)[
+        $funding_source = (object)[
             "type" => $response[1],
             "uuid" => $response[2]
         ];
+        return $funding_source;
+    }
+
+    private function addMicroDeposits($fundingSource)
+    {
+        $fundingApi = new DwollaSwagger\FundingsourcesApi($this->apiClient);
+        $fundingApi->microDeposits(null, $fundingSource);
+        $fundingApi->microDeposits([
+            'amount1' => [
+                'value' => '0.01',
+                'currency' => 'USD'
+            ],
+            'amount2' => [
+                'value' => '0.01',
+                'currency' => 'USD'
+            ]
+        ], $fundingSource);
     }
 }
