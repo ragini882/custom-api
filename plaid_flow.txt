@@ -1,5 +1,8 @@
 https://plaid.com/docs/link/link-token-migration-guide/
 
+https://plaid.com/docs/auth/partnerships/dwolla/
+https://plaid.com/docs/sandbox/test-credentials/
+
 ------>for create link token<-----------
 ->this can handle mobile side as well
 
