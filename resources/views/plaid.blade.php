@@ -1,7 +1,6 @@
 <html>
 
 <head>
-
 </head>
 
 <body>
@@ -11,7 +10,7 @@
 <script>
     var linkHandler = Plaid.create({
         // Make a request to your server to fetch a new link_token.
-        token: (await $.post('/create_link_token')).link_token, //'link-development-a00fbe7e-da44-4f8b-b922-fa7598f522cd'
+        token: 'link-sandbox-60253429-8ae0-4aea-9d5f-dc4b08ef7115', //'link-development-a00fbe7e-da44-4f8b-b922-fa7598f522cd'
         onLoad: function() {
             // The Link module finished loading.
         },

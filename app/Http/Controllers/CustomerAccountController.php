@@ -73,7 +73,7 @@ class CustomerAccountController extends Controller
                 "bankAccountType" => "checking",
                 "name" => $auth_user->first_name
             ];
-            $bank = $this->addBank($bank_data, $auth_user->userAccount->customer_uuid);
+            $bank = $this->addBank($bank_data, $auth_user->userAccount->customer_uuid, true);
             $user_bank = new UserBank;
             $user_bank->user_account_id = $auth_user->userAccount->id;
             $user_bank->funding_source_uuid = $bank->uuid;
@@ -82,11 +82,14 @@ class CustomerAccountController extends Controller
             $user_bank->bank_account_type = $bank_data['bankAccountType'];
             $user_bank->save();
         } else {
+            $access_data = $this->createAccessToken($request->input("public_token"));
+            $processor_data = $this->createProcessorToken($access_data->access_token, $request->input("account_id"));
             $bank_data = [
-                "plaidToken" => $request->input("plaid_token"),
+                "plaidToken" => $processor_data->processor_token,
+                "bankAccountType" => "checking",
                 "name" => $auth_user->first_name
             ];
-            $bank = $this->addBank($bank_data, $auth_user->userAccount->customer_uuid);
+            $bank = $this->addBank($bank_data, $auth_user->userAccount->customer_uuid, false);
             $user_bank = new UserBank;
             $user_bank->user_account_id = $auth_user->userAccount->id;
             $user_bank->funding_source_uuid = $bank->uuid;
@@ -102,17 +105,5 @@ class CustomerAccountController extends Controller
         $auth_user = auth()->user();
         $linkToken = $this->createLinkToken($auth_user->userAccount);
         return $this->sendSuccessResponse('Link token has been generated successfully.', $linkToken);
-    }
-
-    public function getAccountId(Request $request)
-    {
-        //TODO:: need to store account id in database from $request->accountid
-    }
-
-    public function addUserBankInstant(Request $request)
-    {
-        //TODO:: call access token 
-        //TODO:: call process token with access token and account_id
-        //TODO :: call dwolla add bank with process token 
     }
 }

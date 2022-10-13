@@ -22,7 +22,8 @@ class AddBankRequest extends FormRequest
             'routing_number' => 'required_unless:bank_verify_type,instant',
             'account_number' => 'required_unless:bank_verify_type,instant',
             'confirm_account_number' => 'required_unless:bank_verify_type,instant|same:account_number',
-            'plaid_token' => 'required_unless:bank_verify_type,manual',
+            'public_token' => 'required_unless:bank_verify_type,manual',
+            'account_id' => 'required_unless:bank_verify_type,manual',
         ];
     }
 

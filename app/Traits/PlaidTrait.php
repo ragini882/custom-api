@@ -20,7 +20,7 @@ trait PlaidTrait
             'country_codes' => ["US"],
             'language' => 'en',
             'webhook' => "https://c292-103-249-233-56.ngrok.io/api/v1/get-account-id", //url('/api/v1/get-account-id')
-            'redirect_uri' => "https://c292-103-249-233-56.ngrok.io" //url('/')
+            'redirect_uri' => "https://www.google.com" //url('/')
         ]);
         if ($response->successful()) {
             return $response->object();
@@ -29,13 +29,37 @@ trait PlaidTrait
         }
     }
 
-    public function createAccessToken()
+    public function createAccessToken($public_token)
     {
-        //TODO:api call for create access token
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json'
+        ])->post(config('app.plaid.url') . '/item/public_token/exchange', [
+            'client_id' => config('app.plaid.client_id'),
+            'secret' => config('app.plaid.secret'),
+            'public_token' => $public_token
+        ]);
+        if ($response->successful()) {
+            return $response->object();
+        } else {
+            throw new Exception($response->object()->error_message);
+        }
     }
 
-    public function createProcessorToken()
+    public function createProcessorToken($access_token, $account_id)
     {
-        //TODO:api call for processor token
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json'
+        ])->post(config('app.plaid.url') . '/processor/token/create', [
+            'client_id' => config('app.plaid.client_id'),
+            'secret' => config('app.plaid.secret'),
+            'access_token' => $access_token,
+            'account_id' => $account_id,
+            'processor' => 'dwolla'
+        ]);
+        if ($response->successful()) {
+            return $response->object();
+        } else {
+            throw new Exception($response->object()->error_message);
+        }
     }
 }

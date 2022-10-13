@@ -33,11 +33,13 @@ trait DwollaTrait
         ];
     }
 
-    public function addBank($bank_data, $customer_uuid)
+    public function addBank($bank_data, $customer_uuid, $add_deposit)
     {
         $fundingApi = new DwollaSwagger\FundingsourcesApi($this->apiClient);
         $fundingSource = $fundingApi->createCustomerFundingSource($bank_data, config('app.dwolla.url') . "/customers/" . $customer_uuid);
-        $this->addMicroDeposits($fundingSource);
+        if ($add_deposit) {
+            $this->addMicroDeposits($fundingSource);
+        }
         $response = explode('/', parse_url((string)$fundingSource, PHP_URL_PATH));
         $funding_source = (object)[
             "type" => $response[1],
