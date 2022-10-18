@@ -33,5 +33,6 @@ Route::prefix('v1')->group(function () {
         Route::post('get-bank-list', [CustomerAccountController::class, 'getBankList']);
 
         Route::post('add-balance', [CustomerAccountController::class, 'addDwollaBalance']);
+        Route::post('transaction-list', [CustomerAccountController::class, 'getTransactionList']);
     });
 });

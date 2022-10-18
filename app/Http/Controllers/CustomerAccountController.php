@@ -132,6 +132,13 @@ class CustomerAccountController extends Controller
         $this->addBalance($auth_user->userAccount, $request->all());
         $auth_user->userAccount->balance_amount = $request->balance_amount;
         $auth_user->userAccount->save();
-        return $this->sendSuccessResponse('Balance added successfully.');
+        return $this->sendSuccessResponse('You have successfully added money to your wallet');
+    }
+
+    public function getTransactionList()
+    {
+        $auth_user = auth()->user();
+        $bank_list = $this->getTransaction($auth_user->userAccount);
+        return $this->sendSuccessResponse('Transaction List.', $bank_list);
     }
 }

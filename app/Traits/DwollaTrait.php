@@ -106,4 +106,23 @@ trait DwollaTrait
         $transferApi = new DwollaSwagger\TransfersApi($this->apiClient);
         $transferApi->create($transfer_request);
     }
+
+    public function getTransaction($user_account)
+    {
+        $customerUrl = config('app.dwolla.url') . "/customers/" . $user_account->customer_uuid;
+        $TransfersApi = new DwollaSwagger\TransfersApi($this->apiClient);
+        $transfers = $TransfersApi->getCustomerTransfers($customerUrl);
+        $transfers_data = $transfers->_embedded->{'transfers'};
+        $bank_list = [];
+        foreach ($transfers_data as $key => $bank) {
+            $bank_list[$key]['uuid'] = $bank->id;
+            $bank_list[$key]['status'] = $bank->status;
+            $bank_list[$key]['amount'] = $bank->amount;
+            $bank_list[$key]['created'] = $bank->created;
+            $bank_list[$key]['clearing'] = $bank->clearing ?? '';
+            $bank_list[$key]['individualAchId'] = $bank->individualAchId ?? '';
+        }
+        return $bank_list;
+        $transfers->_embedded->{'transfers'}[0]->status; # => "pending"
+    }
 }
