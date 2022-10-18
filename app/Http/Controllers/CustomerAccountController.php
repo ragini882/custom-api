@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\DwollaAccountRequest;
 use App\Http\Requests\AddBankRequest;
+use App\Http\Requests\AddBalanceRequest;
 use App\Models\User;
 use App\Models\UserAccount;
 use App\Models\UserBank;
@@ -66,6 +67,16 @@ class CustomerAccountController extends Controller
         if (is_null($auth_user->userAccount)) {
             return $this->sendBadRequestResponse('Account is not verified for this user.');
         }
+        if (is_null($auth_user->userAccount->balance_account_uuid)) {
+            $balance_account = $this->getFundingSources($auth_user->userAccount);
+            foreach ($balance_account as $balance) {
+                if ($balance['type'] == "balance") {
+                    $auth_user->userAccount->balance_account_uuid = $balance['uuid'];
+                    $auth_user->userAccount->save();
+                }
+            }
+        }
+
         if (strtoupper($request->input("bank_verify_type")) == 'MANUAL') {
             $bank_data = [
                 "routingNumber" => $request->input("routing_number"),
@@ -105,5 +116,22 @@ class CustomerAccountController extends Controller
         $auth_user = auth()->user();
         $linkToken = $this->createLinkToken($auth_user->userAccount);
         return $this->sendSuccessResponse('Link token has been generated successfully.', $linkToken);
+    }
+
+    public function getBankList()
+    {
+        $auth_user = auth()->user();
+        $bank_list = $this->getFundingSources($auth_user->userAccount);
+        return $this->sendSuccessResponse('Bank List.', $bank_list);
+    }
+
+
+    public function addDwollaBalance(AddBalanceRequest $request)
+    {
+        $auth_user = auth()->user();
+        $this->addBalance($auth_user->userAccount, $request->all());
+        $auth_user->userAccount->balance_amount = $request->balance_amount;
+        $auth_user->userAccount->save();
+        return $this->sendSuccessResponse('Balance added successfully.');
     }
 }

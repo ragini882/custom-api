@@ -63,4 +63,47 @@ trait DwollaTrait
             ]
         ], $fundingSource);
     }
+
+    private function getFundingSources($user_account)
+    {
+        $customerUrl = config('app.dwolla.url') . "/customers/" . $user_account->customer_uuid;
+
+        $fsApi = new DwollaSwagger\FundingsourcesApi($this->apiClient);
+
+        $fundingSources = $fsApi->getCustomerFundingSources($customerUrl);
+        $funding_data = $fundingSources->_embedded->{'funding-sources'};
+        $bank_list = [];
+        foreach ($funding_data as $key => $bank) {
+            $bank_list[$key]['uuid'] = $bank->id;
+            $bank_list[$key]['status'] = $bank->status;
+            $bank_list[$key]['type'] = $bank->type;
+            $bank_list[$key]['bankAccountType'] = $bank->bankAccountType ?? '';
+            $bank_list[$key]['name'] = $bank->name;
+            $bank_list[$key]['created'] = $bank->created;
+            $bank_list[$key]['removed'] = $bank->removed;
+            $bank_list[$key]['channels'] = $bank->channels;
+        }
+        return $bank_list;
+    }
+
+    private function addBalance($user_account, $balance_data)
+    {
+        $transfer_request = [
+            '_links' => [
+                'source' => [
+                    'href' => config('app.dwolla.url') . "/funding-sources/" . $balance_data['bank_uuid']
+                ],
+                'destination' => [
+                    'href' => config('app.dwolla.url') . "/funding-sources/" . $user_account['balance_account_uuid']
+                ],
+            ],
+            'amount' => [
+                'currency' => 'USD',
+                'value' => $balance_data['balance_amount']
+            ]
+        ];
+
+        $transferApi = new DwollaSwagger\TransfersApi($this->apiClient);
+        $transferApi->create($transfer_request);
+    }
 }

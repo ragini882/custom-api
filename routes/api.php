@@ -30,7 +30,8 @@ Route::prefix('v1')->group(function () {
         Route::post('add-user-bank', [CustomerAccountController::class, 'addUserBank']);
 
         Route::post('get-link-token', [CustomerAccountController::class, 'getLinkToken']);
-    });
+        Route::post('get-bank-list', [CustomerAccountController::class, 'getBankList']);
 
-    Route::post('get-account-id', [CustomerAccountController::class, 'getAccountId']);
+        Route::post('add-balance', [CustomerAccountController::class, 'addDwollaBalance']);
+    });
 });

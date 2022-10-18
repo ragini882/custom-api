@@ -42,6 +42,8 @@ return new class extends Migration
             $table->string('city');
             $table->string('state');
             $table->string('zip_code');
+            $table->uuid('balance_account_uuid')->nullable();
+            $table->decimal('balance_amount', 10, 2, true)->default(0);
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users');
         });
