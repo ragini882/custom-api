@@ -1,4 +1,5 @@
-https://developers.dwolla.com/concepts/balance-funding-source#functionality-and-benefits
+https://developers.dwolla.com/concepts/real-time-payments#initiating-an-rtp-credit-transfer for instant
+https://developers.dwolla.com/concepts/same-day-ach for standard
 
 
 https://plaid.com/docs/link/link-token-migration-guide/
