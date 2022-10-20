@@ -128,6 +128,7 @@ trait DwollaTrait
 
     private function c2cBalance($user_account, $balance_data)
     {
+        $tax_amount = (1.5 / 100) * $balance_data['balance_amount'];
         $transfer_request = [
             '_links' => [
                 'source' => [
@@ -140,25 +141,38 @@ trait DwollaTrait
             'amount' => [
                 'currency' => 'USD',
                 'value' => $balance_data['balance_amount']
-            ],
-            'clearing' => [
-                'source' => 'standard', //next-day,same-day,next-available
-                'destination' => 'next-available' //next-day,same-day,next-available
-            ],
-            'fees' => [
+            ]
+        ];
+
+        if ($balance_data['transfer_type'] == 'instant') {
+            $transfer_request['processingChannel'] = [
+                'destination' => 'real-time-payments'
+            ];
+            $transfer_request['rtpDetails'] = [
+                'destination' => [
+                    'remittanceData' => 'ABC_123 Remittance Data'
+                ]
+            ];
+            $transfer_request['fees'] = [
                 [
                     '_links' => [
                         'charge-to' => [
-                            'href' => 'https://api-sandbox.dwolla.com/customers/479ce4c8-385f-4cfa-9693-262c0c3b6408'
+                            'href' => config('app.dwolla.url') . "/customers/" . $user_account['customer_uuid']
                         ]
                     ],
                     'amount' => [
-                        'value' => '2.00',
+                        'value' => $tax_amount,
                         'currency' => 'USD'
                     ]
                 ]
-            ]
-        ];
+            ];
+        } else {
+            $transfer_request['clearing'] = [
+                'source' => 'standard', //next-day,same-day,next-available,standard
+                'destination' => 'next-available' //next-day,same-day,next-available
+            ];
+        }
+
 
         $transferApi = new DwollaSwagger\TransfersApi($this->apiClient);
         $transferApi->create($transfer_request);

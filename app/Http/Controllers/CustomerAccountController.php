@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\DwollaAccountRequest;
 use App\Http\Requests\AddBankRequest;
 use App\Http\Requests\AddBalanceRequest;
+use App\Http\Requests\C2cTransferRequest;
 use App\Models\User;
 use App\Models\UserAccount;
 use App\Models\UserBank;
@@ -142,7 +143,7 @@ class CustomerAccountController extends Controller
         return $this->sendSuccessResponse('Transaction List.', $bank_list);
     }
 
-    public function c2cDwollaBalance(AddBalanceRequest $request)
+    public function c2cDwollaBalance(C2cTransferRequest $request)
     {
         $auth_user = auth()->user();
         $this->c2cBalance($auth_user->userAccount, $request->all());
