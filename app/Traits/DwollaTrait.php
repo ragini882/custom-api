@@ -125,4 +125,41 @@ trait DwollaTrait
         return $bank_list;
         $transfers->_embedded->{'transfers'}[0]->status; # => "pending"
     }
+
+    private function c2cBalance($user_account, $balance_data)
+    {
+        $transfer_request = [
+            '_links' => [
+                'source' => [
+                    'href' => config('app.dwolla.url') . "/funding-sources/" . $user_account['balance_account_uuid']
+                ],
+                'destination' => [
+                    'href' => config('app.dwolla.url') . "/funding-sources/" . $balance_data['bank_uuid']
+                ],
+            ],
+            'amount' => [
+                'currency' => 'USD',
+                'value' => $balance_data['balance_amount']
+            ],
+            "clearing" => [
+                "source" => "standard" //"next-available"
+            ],
+            'fees' => [
+                [
+                    '_links' => [
+                        'charge-to' => [
+                            'href' => 'https://api-sandbox.dwolla.com/customers/479ce4c8-385f-4cfa-9693-262c0c3b6408'
+                        ]
+                    ],
+                    'amount' => [
+                        'value' => '2.00',
+                        'currency' => 'USD'
+                    ]
+                ]
+            ]
+        ];
+
+        $transferApi = new DwollaSwagger\TransfersApi($this->apiClient);
+        $transferApi->create($transfer_request);
+    }
 }

@@ -141,4 +141,19 @@ class CustomerAccountController extends Controller
         $bank_list = $this->getTransaction($auth_user->userAccount);
         return $this->sendSuccessResponse('Transaction List.', $bank_list);
     }
+
+    public function c2cDwollaBalance(AddBalanceRequest $request)
+    {
+        $auth_user = auth()->user();
+        $this->c2cBalance($auth_user->userAccount, $request->all());
+        $auth_user->userAccount->balance_amount = $request->balance_amount;
+        $auth_user->userAccount->save();
+        return $this->sendSuccessResponse('Balance transfer to user successfully.');
+    }
+
+    public function getCustomerList()
+    {
+        $customers = UserAccount::get(['legal_first_name', 'legal_last_name', 'balance_account_uuid']);
+        return $this->sendSuccessResponse('Customer List.', $customers);
+    }
 }
