@@ -141,8 +141,9 @@ trait DwollaTrait
                 'currency' => 'USD',
                 'value' => $balance_data['balance_amount']
             ],
-            "clearing" => [
-                "source" => "standard" //"next-available"
+            'clearing' => [
+                'source' => 'standard', //next-day,same-day,next-available
+                'destination' => 'next-available' //next-day,same-day,next-available
             ],
             'fees' => [
                 [
