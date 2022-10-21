@@ -121,6 +121,7 @@ trait DwollaTrait
             $bank_list[$key]['created'] = $bank->created;
             $bank_list[$key]['clearing'] = $bank->clearing ?? '';
             $bank_list[$key]['individualAchId'] = $bank->individualAchId ?? '';
+            $bank_list[$key]['metadata'] = $bank->metadata ?? '';
         }
         return $bank_list;
         $transfers->_embedded->{'transfers'}[0]->status; # => "pending"
@@ -141,6 +142,9 @@ trait DwollaTrait
             'amount' => [
                 'currency' => 'USD',
                 'value' => $balance_data['balance_amount']
+            ],
+            'metadata' => [
+                'note' => 'payment for completed work Dec. 1',
             ]
         ];
 
