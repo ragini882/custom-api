@@ -6,9 +6,11 @@ use App\Http\Requests\DwollaAccountRequest;
 use App\Http\Requests\AddBankRequest;
 use App\Http\Requests\AddBalanceRequest;
 use App\Http\Requests\C2cTransferRequest;
+use App\Http\Requests\GroupRequest;
 use App\Models\User;
 use App\Models\UserAccount;
 use App\Models\UserBank;
+use App\Models\Group;
 use App\Traits\ResponseTrait;
 use App\Traits\DwollaTrait;
 use App\Traits\PlaidTrait;
@@ -68,15 +70,15 @@ class CustomerAccountController extends Controller
         if (is_null($auth_user->userAccount)) {
             return $this->sendBadRequestResponse('Account is not verified for this user.');
         }
-        if (is_null($auth_user->userAccount->balance_account_uuid)) {
-            $balance_account = $this->getFundingSources($auth_user->userAccount);
-            foreach ($balance_account as $balance) {
-                if ($balance['type'] == "balance") {
-                    $auth_user->userAccount->balance_account_uuid = $balance['uuid'];
-                    $auth_user->userAccount->save();
-                }
-            }
-        }
+        // if (is_null($auth_user->userAccount->balance_account_uuid)) {
+        //     $balance_account = $this->getFundingSources($auth_user->userAccount);
+        //     foreach ($balance_account as $balance) {
+        //         if ($balance['type'] == "balance") {
+        //             $auth_user->userAccount->balance_account_uuid = $balance['uuid'];
+        //             $auth_user->userAccount->save();
+        //         }
+        //     }
+        // }
 
         if (strtoupper($request->input("bank_verify_type")) == 'MANUAL') {
             $bank_data = [
@@ -154,7 +156,22 @@ class CustomerAccountController extends Controller
 
     public function getCustomerList()
     {
-        $customers = UserAccount::get(['legal_first_name', 'legal_last_name', 'balance_account_uuid']);
+        $customers = UserAccount::get(['id', 'legal_first_name', 'legal_last_name', 'balance_account_uuid']);
         return $this->sendSuccessResponse('Customer List.', $customers);
+    }
+
+    public function userDetail()
+    {
+        $auth_user = auth()->user();
+        $auth_user->userAccount;
+        $auth_user->userAccount->balance_account_uuid = $this->getBalance($auth_user->userAccount)['uuid'];
+        $auth_user->userAccount->balance_amount = $this->getBalance($auth_user->userAccount)['amount'];
+        $auth_user->userAccount->userGroups;
+        $auth_user->userAccount->groupAdmin;
+        foreach ($auth_user->userAccount->groupAdmin as $admin_group) {
+            $auth_user->userAccount->balance_amount -= $admin_group->amount;
+        }
+        $auth_user->userAccount->save();
+        return $this->sendSuccessResponse('User details.', $auth_user);
     }
 }

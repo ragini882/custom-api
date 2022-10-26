@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CustomerAccountController;
+use App\Http\Controllers\GroupController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,6 +27,8 @@ Route::prefix('v1')->group(function () {
         Route::post('verify-otp', [AuthController::class, 'verifyOtp']);
         Route::post('reset-password', [AuthController::class, 'resetPassword']);
 
+        Route::post('get-user-detail', [CustomerAccountController::class, 'userDetail']);
+
         Route::post('create-user-account', [CustomerAccountController::class, 'createDwollaAccount']);
         Route::post('add-user-bank', [CustomerAccountController::class, 'addUserBank']);
 
@@ -37,5 +40,12 @@ Route::prefix('v1')->group(function () {
 
         Route::post('customer-list', [CustomerAccountController::class, 'getCustomerList']);
         Route::post('c2c-balance', [CustomerAccountController::class, 'c2cDwollaBalance']);
+
+        Route::post('group/create', [GroupController::class, 'createGroup']);
+        Route::post('group/list', [GroupController::class, 'getGroupList']);
+        Route::post('group/{id}/delete', [GroupController::class, 'deleteGroup']);
+        Route::post('group/add-customer', [GroupController::class, 'addCustomerGroup']);
+        Route::post('group/delete-customer', [GroupController::class, 'deleteCustomerGroup']);
+        Route::post('group/contribute', [GroupController::class, 'contributeAmount']);
     });
 });

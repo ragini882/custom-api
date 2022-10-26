@@ -8,7 +8,7 @@ trait DwollaTrait
 {
     private $apiClient;
 
-    public function __construct()
+    private function init()
     {
         DwollaSwagger\Configuration::$username = config('app.dwolla.key');
         DwollaSwagger\Configuration::$password = config('app.dwolla.secret');
@@ -24,6 +24,7 @@ trait DwollaTrait
 
     public function createCustomer($user_data)
     {
+        $this->init();
         $customersApi = new DwollaSwagger\CustomersApi($this->apiClient);
         $customer = $customersApi->create($user_data);
         $response = explode('/', parse_url((string)$customer, PHP_URL_PATH));
@@ -35,6 +36,7 @@ trait DwollaTrait
 
     public function addBank($bank_data, $customer_uuid, $add_deposit)
     {
+        $this->init();
         $fundingApi = new DwollaSwagger\FundingsourcesApi($this->apiClient);
         $fundingSource = $fundingApi->createCustomerFundingSource($bank_data, config('app.dwolla.url') . "/customers/" . $customer_uuid);
         if ($add_deposit) {
@@ -50,6 +52,7 @@ trait DwollaTrait
 
     private function addMicroDeposits($fundingSource)
     {
+        $this->init();
         $fundingApi = new DwollaSwagger\FundingsourcesApi($this->apiClient);
         $fundingApi->microDeposits(null, $fundingSource);
         $fundingApi->microDeposits([
@@ -66,6 +69,7 @@ trait DwollaTrait
 
     private function getFundingSources($user_account)
     {
+        $this->init();
         $customerUrl = config('app.dwolla.url') . "/customers/" . $user_account->customer_uuid;
 
         $fsApi = new DwollaSwagger\FundingsourcesApi($this->apiClient);
@@ -88,6 +92,7 @@ trait DwollaTrait
 
     private function addBalance($user_account, $balance_data)
     {
+        $this->init();
         $transfer_request = [
             '_links' => [
                 'source' => [
@@ -107,8 +112,26 @@ trait DwollaTrait
         $transferApi->create($transfer_request);
     }
 
+    public function getBalance($user_account)
+    {
+        $this->init();
+        $balance_data = [];
+        $balance_account = $this->getFundingSources($user_account);
+        foreach ($balance_account as $balance) {
+            if ($balance['type'] == "balance") {
+                $balance_data['uuid'] = $balance['uuid'];
+            }
+        }
+        $fundingSourceUrl = config('app.dwolla.url') . "/funding-sources/" .  $balance_data['uuid'];
+        $fsApi = new DwollaSwagger\FundingsourcesApi($this->apiClient);
+        $fundingSource = $fsApi->getBalance($fundingSourceUrl);
+        $balance_data['amount'] =  $fundingSource->balance->value;
+        return $balance_data;
+    }
+
     public function getTransaction($user_account)
     {
+        $this->init();
         $customerUrl = config('app.dwolla.url') . "/customers/" . $user_account->customer_uuid;
         $TransfersApi = new DwollaSwagger\TransfersApi($this->apiClient);
         $transfers = $TransfersApi->getCustomerTransfers($customerUrl);
@@ -129,6 +152,7 @@ trait DwollaTrait
 
     private function c2cBalance($user_account, $balance_data)
     {
+        $this->init();
         $tax_amount = (1.5 / 100) * $balance_data['balance_amount'];
         $transfer_request = [
             '_links' => [
@@ -177,6 +201,29 @@ trait DwollaTrait
             ];
         }
 
+
+        $transferApi = new DwollaSwagger\TransfersApi($this->apiClient);
+        $transferApi->create($transfer_request);
+    }
+
+
+    private function groupContributeAmount($contribute_data)
+    {
+        $this->init();
+        $transfer_request = [
+            '_links' => [
+                'source' => [
+                    'href' => config('app.dwolla.url') . "/funding-sources/" . $contribute_data['source']
+                ],
+                'destination' => [
+                    'href' => config('app.dwolla.url') . "/funding-sources/" . $contribute_data['destination']
+                ],
+            ],
+            'amount' => [
+                'currency' => 'USD',
+                'value' => $contribute_data['amount']
+            ]
+        ];
 
         $transferApi = new DwollaSwagger\TransfersApi($this->apiClient);
         $transferApi->create($transfer_request);
