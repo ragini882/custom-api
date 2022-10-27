@@ -150,10 +150,11 @@ trait DwollaTrait
         $transfers->_embedded->{'transfers'}[0]->status; # => "pending"
     }
 
-    private function c2cBalance($user_account, $balance_data)
+    private function withdrawWalletBalance($user_account, $balance_data)
     {
         $this->init();
         $tax_amount = (1.5 / 100) * $balance_data['balance_amount'];
+        $tax_amount = ($tax_amount > 15) ? 15 : $tax_amount;
         $transfer_request = [
             '_links' => [
                 'source' => [
@@ -162,24 +163,22 @@ trait DwollaTrait
                 'destination' => [
                     'href' => config('app.dwolla.url') . "/funding-sources/" . $balance_data['bank_uuid']
                 ],
-            ],
-            'amount' => [
-                'currency' => 'USD',
-                'value' => $balance_data['balance_amount']
-            ],
-            'metadata' => [
-                'note' => 'payment for completed work Dec. 1',
             ]
         ];
 
         if ($balance_data['transfer_type'] == 'instant') {
-            $transfer_request['processingChannel'] = [
-                'destination' => 'real-time-payments'
-            ];
-            $transfer_request['rtpDetails'] = [
-                'destination' => [
-                    'remittanceData' => 'ABC_123 Remittance Data'
-                ]
+            // $transfer_request['processingChannel'] = [
+            //     'destination' => 'real-time-payments'
+            // ];
+            // $transfer_request['rtpDetails'] = [
+            //     'destination' => [
+            //         'remittanceData' => 'ABC_123 Remittance Data'
+            //     ]
+            // ];
+
+            $transfer_request['amount'] = [
+                'currency' => 'USD',
+                'value' => $balance_data['balance_amount'] - $tax_amount
             ];
             $transfer_request['fees'] = [
                 [
@@ -194,7 +193,15 @@ trait DwollaTrait
                     ]
                 ]
             ];
+            // $transfer_request['clearing'] = [
+            //     'source' => 'same-day', //next-day,same-day,next-available,standard
+            //     'destination' => 'same-day' //next-day,same-day,next-available
+            // ];
         } else {
+            $transfer_request['amount'] = [
+                'currency' => 'USD',
+                'value' => $balance_data['balance_amount'] - $tax_amount
+            ];
             $transfer_request['clearing'] = [
                 'source' => 'standard', //next-day,same-day,next-available,standard
                 'destination' => 'next-available' //next-day,same-day,next-available

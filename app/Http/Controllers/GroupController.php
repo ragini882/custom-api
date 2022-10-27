@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\GroupRequest;
 use App\Http\Requests\CustomerGroupRequest;
 use App\Http\Requests\ContributeAmountRequest;
+use App\Http\Requests\WithdrawGroupAmountRequest;
 use App\Models\Group;
 use App\Traits\ResponseTrait;
 use App\Traits\DwollaTrait;
@@ -68,5 +69,17 @@ class GroupController extends Controller
         $group->amount += $request->input("amount");
         $group->save();
         return $this->sendSuccessResponse('You Successfully Contributed $' . $request->input("amount") . ' to "' . $group->name . '"');
+    }
+
+    public function withdrawGroupAmount(WithdrawGroupAmountRequest $request)
+    {
+        $auth_user = auth()->user();
+        $group = Group::where('user_account_id', $auth_user->userAccount->id)->where('id', $request->input("group_id"))->first();
+        if (is_null($group)) {
+            return $this->sendBadRequestResponse('You are not admin of this group.');
+        }
+        $group->amount = 0;
+        $group->save();
+        return $this->sendSuccessResponse('Group fund transfer to admin successfully.', $auth_user->userAccount);
     }
 }

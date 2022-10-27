@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\validator as Validator;
 use App\Traits\ResponseTrait;
 
-class C2cTransferRequest extends FormRequest
+class WithdrawBalanceRequest extends FormRequest
 {
     use ResponseTrait;
 

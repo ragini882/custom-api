@@ -39,7 +39,7 @@ Route::prefix('v1')->group(function () {
         Route::post('transaction-list', [CustomerAccountController::class, 'getTransactionList']);
 
         Route::post('customer-list', [CustomerAccountController::class, 'getCustomerList']);
-        Route::post('c2c-balance', [CustomerAccountController::class, 'c2cDwollaBalance']);
+        Route::post('withdraw-balance', [CustomerAccountController::class, 'withdrawBalance']);
 
         Route::post('group/create', [GroupController::class, 'createGroup']);
         Route::post('group/list', [GroupController::class, 'getGroupList']);
@@ -47,5 +47,6 @@ Route::prefix('v1')->group(function () {
         Route::post('group/add-customer', [GroupController::class, 'addCustomerGroup']);
         Route::post('group/delete-customer', [GroupController::class, 'deleteCustomerGroup']);
         Route::post('group/contribute', [GroupController::class, 'contributeAmount']);
+        Route::post('group/withdraw-amount', [GroupController::class, 'withdrawGroupAmount']);
     });
 });

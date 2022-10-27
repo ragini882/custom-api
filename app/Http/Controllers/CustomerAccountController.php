@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\DwollaAccountRequest;
 use App\Http\Requests\AddBankRequest;
 use App\Http\Requests\AddBalanceRequest;
-use App\Http\Requests\C2cTransferRequest;
+use App\Http\Requests\WithdrawBalanceRequest;
 use App\Http\Requests\GroupRequest;
 use App\Models\User;
 use App\Models\UserAccount;
@@ -145,10 +145,13 @@ class CustomerAccountController extends Controller
         return $this->sendSuccessResponse('Transaction List.', $bank_list);
     }
 
-    public function c2cDwollaBalance(C2cTransferRequest $request)
+    public function withdrawBalance(WithdrawBalanceRequest $request)
     {
         $auth_user = auth()->user();
-        $this->c2cBalance($auth_user->userAccount, $request->all());
+        if ($request->input('balance_amount') > $auth_user->userAccount->balance_amount) {
+            return $this->sendBadRequestResponse('Amount is grater then available balance');
+        }
+        $this->withdrawWalletBalance($auth_user->userAccount, $request->all());
         $auth_user->userAccount->balance_amount = $request->balance_amount;
         $auth_user->userAccount->save();
         return $this->sendSuccessResponse('Balance transfer to user successfully.');
