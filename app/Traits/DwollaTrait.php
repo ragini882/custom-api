@@ -193,10 +193,10 @@ trait DwollaTrait
                     ]
                 ]
             ];
-            // $transfer_request['clearing'] = [
-            //     'source' => 'same-day', //next-day,same-day,next-available,standard
-            //     'destination' => 'same-day' //next-day,same-day,next-available
-            // ];
+            $transfer_request['clearing'] = [
+                'source' => 'standard', //next-day,same-day,next-available,standard
+                'destination' => 'next-available' //next-day,same-day,next-available
+            ];
         } else {
             $transfer_request['amount'] = [
                 'currency' => 'USD',
