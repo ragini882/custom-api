@@ -10,7 +10,7 @@
 <script>
     var linkHandler = Plaid.create({
         // Make a request to your server to fetch a new link_token.
-        token: 'link-sandbox-60253429-8ae0-4aea-9d5f-dc4b08ef7115', //'link-development-a00fbe7e-da44-4f8b-b922-fa7598f522cd'
+        token: 'link-sandbox-0ccb001e-6d92-44ac-bdc0-eced71cddacd', //'link-development-a00fbe7e-da44-4f8b-b922-fa7598f522cd'
         onLoad: function() {
             // The Link module finished loading.
         },

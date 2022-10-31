@@ -165,6 +165,7 @@ return [
         'url' => env('DWOLLA_API_URL'),
         'key'  => env('DWOLLA_API_KEY'),
         'secret'  => env('DWOLLA_API_SECRET'),
+        'balance_uuid' => '81e579a8-0f1f-4daa-afa3-ed9ad5a765dc'
     ],
 
     /*

@@ -167,36 +167,50 @@ trait DwollaTrait
         ];
 
         if ($balance_data['transfer_type'] == 'instant') {
-            // $transfer_request['processingChannel'] = [
-            //     'destination' => 'real-time-payments'
-            // ];
-            // $transfer_request['rtpDetails'] = [
-            //     'destination' => [
-            //         'remittanceData' => 'ABC_123 Remittance Data'
-            //     ]
-            // ];
-
             $transfer_request['amount'] = [
                 'currency' => 'USD',
                 'value' => $balance_data['balance_amount'] - $tax_amount
             ];
-            $transfer_request['fees'] = [
-                [
-                    '_links' => [
-                        'charge-to' => [
-                            'href' => config('app.dwolla.url') . "/customers/" . $user_account['customer_uuid']
-                        ]
-                    ],
-                    'amount' => [
-                        'value' => $tax_amount,
-                        'currency' => 'USD'
-                    ]
-                ]
-            ];
             $transfer_request['clearing'] = [
-                'source' => 'standard', //next-day,same-day,next-available,standard
+                'source' => 'next-available', //next-day,same-day,next-available,standard
                 'destination' => 'next-available' //next-day,same-day,next-available
             ];
+            // $transfer_request['fees'] = [
+            //     [
+            //         '_links' => [
+            //             'charge-to' => [
+            //                 'href' => config('app.dwolla.url') . "/customers/" . $user_account['customer_uuid']
+            //             ]
+            //         ],
+            //         'amount' => [
+            //             'value' => $tax_amount,
+            //             'currency' => 'USD'
+            //         ]
+            //     ]
+            // ];
+            $transferApi = new DwollaSwagger\TransfersApi($this->apiClient);
+            $transferApi->create($transfer_request);
+
+            $fees_request = [
+                '_links' => [
+                    'source' => [
+                        'href' => config('app.dwolla.url') . "/funding-sources/" . $user_account['balance_account_uuid']
+                    ],
+                    'destination' => [
+                        'href' => config('app.dwolla.url') . "/funding-sources/" . config('app.dwolla.balance_uuid')
+                    ],
+                ],
+                'amount' => [
+                    'currency' => 'USD',
+                    'value' => $tax_amount,
+                ],
+                'clearing' => [
+                    'source' => 'next-available', //next-day,same-day,next-available,standard
+                    'destination' => 'next-available' //next-day,same-day,next-available
+                ]
+            ];
+            $feeApi = new DwollaSwagger\TransfersApi($this->apiClient);
+            $feeApi->create($fees_request);
         } else {
             $transfer_request['amount'] = [
                 'currency' => 'USD',
@@ -206,11 +220,10 @@ trait DwollaTrait
                 'source' => 'standard', //next-day,same-day,next-available,standard
                 'destination' => 'next-available' //next-day,same-day,next-available
             ];
+
+            $transferApi = new DwollaSwagger\TransfersApi($this->apiClient);
+            $transferApi->create($transfer_request);
         }
-
-
-        $transferApi = new DwollaSwagger\TransfersApi($this->apiClient);
-        $transferApi->create($transfer_request);
     }
 
 
