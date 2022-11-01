@@ -177,4 +177,9 @@ class CustomerAccountController extends Controller
         $auth_user->userAccount->save();
         return $this->sendSuccessResponse('User details.', $auth_user);
     }
+
+    public function requestPayment()
+    {
+        $auth_user = auth()->user();
+    }
 }

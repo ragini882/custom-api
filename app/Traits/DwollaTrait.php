@@ -22,6 +22,23 @@ trait DwollaTrait
         DwollaSwagger\Configuration::$access_token = $tokensApi->token()->access_token;
     }
 
+    public function addWebhookUrl()
+    {
+        $this->init();
+        $webhookApi = new DwollaSwagger\WebhooksubscriptionsApi($this->apiClient);
+        $subscription = $webhookApi->create(array(
+            'url' => 'https://f301-103-249-233-15.ngrok.io/api/v1/webhook/dwolla-status',
+            'secret' => '1234567890',
+        ));
+    }
+
+    public function deleteWebhookUrl()
+    {
+        $this->init();
+        $webhookApi = new DwollaSwagger\WebhooksubscriptionsApi($this->apiClient);
+        $webhookApi->deleteById('https://api-sandbox.dwolla.com/webhook-subscriptions/8d25ac6e-e6e9-40ce-a67b-e0115c79bc2c');
+    }
+
     public function createCustomer($user_data)
     {
         $this->init();
@@ -175,19 +192,6 @@ trait DwollaTrait
                 'source' => 'next-available', //next-day,same-day,next-available,standard
                 'destination' => 'next-available' //next-day,same-day,next-available
             ];
-            // $transfer_request['fees'] = [
-            //     [
-            //         '_links' => [
-            //             'charge-to' => [
-            //                 'href' => config('app.dwolla.url') . "/customers/" . $user_account['customer_uuid']
-            //             ]
-            //         ],
-            //         'amount' => [
-            //             'value' => $tax_amount,
-            //             'currency' => 'USD'
-            //         ]
-            //     ]
-            // ];
             $transferApi = new DwollaSwagger\TransfersApi($this->apiClient);
             $transferApi->create($transfer_request);
 

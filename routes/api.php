@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CustomerAccountController;
 use App\Http\Controllers\GroupController;
+use App\Http\Controllers\DwollaWebhookController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,4 +50,6 @@ Route::prefix('v1')->group(function () {
         Route::post('group/contribute', [GroupController::class, 'contributeAmount']);
         Route::post('group/withdraw-amount', [GroupController::class, 'withdrawGroupAmount']);
     });
+
+    Route::post('webhook/dwolla-status', [DwollaWebhookController::class, 'webhookRequest']);
 });
