@@ -14,12 +14,13 @@ use App\Models\Group;
 use App\Traits\ResponseTrait;
 use App\Traits\DwollaTrait;
 use App\Traits\PlaidTrait;
+use App\Traits\CurrencyCloudTrait;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Log;
 
 class CustomerAccountController extends Controller
 {
-    use ResponseTrait, DwollaTrait, PlaidTrait;
+    use ResponseTrait, DwollaTrait, PlaidTrait, CurrencyCloudTrait;
 
     public function createDwollaAccount(DwollaAccountRequest $request)
     {
@@ -40,6 +41,30 @@ class CustomerAccountController extends Controller
             ];
 
             $customer = $this->createCustomer($user);
+            $accountDetail = $this->createSubAccount($user);
+            $contact = $this->contactSubAccount($accountDetail, $user, $auth_user);
+
+            $dwollaSubAccount = [
+                "firstName" => $contact->first_name,
+                "lastName" => $contact->last_name,
+                "email" => $contact->email_address,
+                "type" => 'receive-only',
+                "dateOfBirth" => date("Y-m-d", strtotime($contact->date_of_birth))
+            ];
+            $subAcc = $this->createCustomer($dwollaSubAccount);
+
+            // dd($subAcc);
+
+            $response = $this->findFundingSource($contact->id, $accountDetail->id);
+            $bank_data = [
+                "routingNumber" => $response->funding_accounts[1]->routing_code,
+                "accountNumber" => $response->funding_accounts[1]->account_number,
+                "bankAccountType" => "savings",
+                "cc" => true,
+                "name" => $response->funding_accounts[1]->account_holder_name
+            ];
+            $bank = $this->addBank($bank_data, $subAcc->uuid, true);
+
             $user_dwolla_account = new UserAccount;
             $user_dwolla_account->user_id = $auth_user->id;
             $user_dwolla_account->customer_uuid = $customer->uuid;
@@ -58,7 +83,9 @@ class CustomerAccountController extends Controller
             $user->is_account_verified = 1;
             $user->save();
             $user['user_account'] = $user_dwolla_account;
-            return $this->sendSuccessResponse('Account verified successfully.', $user);
+            $user['contact_id'] = $contact->id;
+            $user['subaccount_id'] = $accountDetail->id;
+            return $this->sendSuccessResponse('Account verified successfully and created sub account', $user);
         } else {
             return $this->sendBadRequestResponse('Account is already verified');
         }

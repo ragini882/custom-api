@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CustomerAccountController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\DwollaWebhookController;
+use App\Http\Controllers\RequestPaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,7 +50,18 @@ Route::prefix('v1')->group(function () {
         Route::post('group/delete-customer', [GroupController::class, 'deleteCustomerGroup']);
         Route::post('group/contribute', [GroupController::class, 'contributeAmount']);
         Route::post('group/withdraw-amount', [GroupController::class, 'withdrawGroupAmount']);
+
+        Route::post('request-payment', [RequestPaymentController::class, 'requestPayment']);
+        Route::post('get-request-payment', [RequestPaymentController::class, 'getRequestPayment']);
     });
+    Route::post('get-currency-account', [RequestPaymentController::class, 'convert']);
+
+    Route::POST('getRate', [RequestPaymentController::class, 'fetchRate']);
+    Route::POST('createConversion', [RequestPaymentController::class, 'createConversion']);
+    Route::POST('createBeneficiary', [RequestPaymentController::class, 'createBeneficiary']);
+    Route::POST('createPayment', [CurrencyCloudController::class, 'createPayment']);
+
+
 
     Route::post('webhook/dwolla-status', [DwollaWebhookController::class, 'webhookRequest']);
 });

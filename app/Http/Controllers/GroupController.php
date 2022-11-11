@@ -23,7 +23,7 @@ class GroupController extends Controller
             "name" => $request->input("name"),
             "description" => $request->input("description"),
             "goal" => $request->input("goal"),
-            "user_account_id" => $auth_user->id
+            "user_account_id" => $auth_user->userAccount->id
         ];
         $group = Group::create($group_data);
         return $this->sendSuccessResponse('Group has been added successfully.', $group);
@@ -32,7 +32,7 @@ class GroupController extends Controller
     public function getGroupList()
     {
         $auth_user = auth()->user();
-        $group = Group::where('user_account_id', $auth_user->id)->get();
+        $group = Group::where('user_account_id', $auth_user->userAccount->id)->get();
         return $this->sendSuccessResponse('Group List.', $group);
     }
 
