@@ -77,6 +77,9 @@ class CustomerAccountController extends Controller
             $user_dwolla_account->city = $user['city'];
             $user_dwolla_account->state = $user['state'];
             $user_dwolla_account->zip_code = $user['postalCode'];
+            $user_dwolla_account->cc_account_uuid = $accountDetail->id;
+            $user_dwolla_account->cc_contact_uuid = $contact->id;
+            $user_dwolla_account->sub_account_uuid = $subAcc->uuid;
             $user_dwolla_account->save();
 
             $user = User::where('id', $auth_user->id)->first();

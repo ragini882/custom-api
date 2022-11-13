@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Models\UserDwollaAccount;
 use App\Models\PaymentRequest;
 use App\Models\UserAccount;
+use App\Models\Beneficiary;
 use App\Traits\ResponseTrait;
 use App\Traits\CurrencyCloudTrait;
 use App\Traits\DwollaTrait;
@@ -59,6 +60,19 @@ class RequestPaymentController extends Controller
     {
         $user = auth()->user();
         $beneficiary = $this->createBeneficiaryDetail($request->all());
+
+        Beneficiary::create([
+            'cc_contact_uuid' => $request->input('on_behalf_of'),
+            'beneficiary_uuid' => $beneficiary->id,
+            'name' => $beneficiary->name,
+            'bank_account_holder_name' => $beneficiary->bank_account_holder_name,
+            'bank_country' => $beneficiary->bank_country,
+            'currency' => $beneficiary->currency,
+            'account_number' => $beneficiary->account_number,
+            'routing_code_type_1' => $beneficiary->routing_code_type_1,
+            'routing_code_value_1' => $beneficiary->routing_code_value_1,
+            'iban' => $beneficiary->iban
+        ]);
         return $this->sendSuccessResponse('Beneficiary successfully created.', $beneficiary);
     }
 
