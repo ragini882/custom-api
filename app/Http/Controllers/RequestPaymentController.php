@@ -64,7 +64,7 @@ class RequestPaymentController extends Controller
 
     public function createPayment(InternationalPaymentRequest $request)
     {
-        $user = auth()->user();
+        $user = auth()->user();//swa
         $payment = $this->createPaymentDetail($request->all());
     }
 }
