@@ -117,6 +117,7 @@ class CustomerAccountController extends Controller
                 "bankAccountType" => "checking",
                 "name" => $auth_user->first_name
             ];
+
             $bank = $this->addBank($bank_data, $auth_user->userAccount->customer_uuid, true);
             $user_bank = new UserBank;
             $user_bank->user_account_id = $auth_user->userAccount->id;

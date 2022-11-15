@@ -53,13 +53,14 @@ Route::prefix('v1')->group(function () {
 
         Route::post('request-payment', [RequestPaymentController::class, 'requestPayment']);
         Route::post('get-request-payment', [RequestPaymentController::class, 'getRequestPayment']);
+        Route::post('transferVerifyToReceiveOnly', [RequestPaymentController::class, 'transferVerifyToReceiveOnly']);
     });
     Route::post('get-currency-account', [RequestPaymentController::class, 'convert']);
-
     Route::POST('getRate', [RequestPaymentController::class, 'fetchRate']);
     Route::POST('createConversion', [RequestPaymentController::class, 'createConversion']);
     Route::POST('createBeneficiary', [RequestPaymentController::class, 'createBeneficiary']);
-    Route::POST('createPayment', [CurrencyCloudController::class, 'createPayment']);
+    Route::POST('createPayment', [RequestPaymentController::class, 'createPayment']);
+    Route::POST('balance', [RequestPaymentController::class, 'getBalanceCurrencyCloud']);
 
 
 

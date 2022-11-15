@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 use Exception;
 
 trait CurrencyCloudTrait
@@ -230,6 +231,24 @@ trait CurrencyCloudTrait
         }
     }
 
+    public function BalanceCurrencyCloud($balance)
+    {
+        $this->logIn();
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json',
+            'X-Auth-Token' => $this->x_auth_token
+        ])->get(config('app.currency.url') . '/balances/' . $balance['currency'], [
+            'currency' => $balance['currency'],
+            'on_behalf_of' => $balance['on_behalf_of']
+        ]);
+        $this->logOut();
+        if ($response->successful()) {
+            return $response->object();
+        } else {
+            throw new Exception(json_encode($response->object()->error_messages));
+        }
+    }
+
     public function createPaymentDetail($payment)
     {
         $this->logIn();
@@ -237,19 +256,17 @@ trait CurrencyCloudTrait
             'Content-Type' => 'application/json',
             'X-Auth-Token' => $this->x_auth_token
         ])->post(config('app.currency.url') . '/payments/create', [
-            'currency' => $payment['currency'],
             'beneficiary_id' => $payment['beneficiary_id'],
-            'amount' => $payment['amount'],
-            'reason' => $payment['reason'],
             'reference' => $payment['reference'],
-            // 'routing_code_type_1' => $payment['routing_code_type_1'],
-            // 'routing_code_value_1' => $payment['routing_code_value_1'],
-            // 'iban' => $payment['iban'],
-            // 'on_behalf_of' => $payment['on_behalf_of']
+            'unique_request_id' => str::uuid(),
+            'reason' => $payment['reason'],
+            'currency' => $payment['currency'],
+            'amount' => $payment['amount'],
+            'payment_type' => 'regular',
+            'on_behalf_of' => $payment['on_behalf_of']
         ]);
         $this->logOut();
         if ($response->successful()) {
-            //dd($response->object());
             return $response->object();
         } else {
             throw new Exception(json_encode($response->object()->error_messages));

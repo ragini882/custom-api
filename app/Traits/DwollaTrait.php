@@ -252,4 +252,26 @@ trait DwollaTrait
         $transferApi = new DwollaSwagger\TransfersApi($this->apiClient);
         $transferApi->create($transfer_request);
     }
+
+    public function transferVerifyBankToReceiveOnlyBank($user_account, $balance_data)
+    {
+        $this->init();
+        $transfer_request = [
+            '_links' => [
+                'source' => [
+                    'href' => config('app.dwolla.url') . "/funding-sources/58b8e271-a24f-475a-bfdd-2e7b285a4765"
+                ],
+                'destination' => [
+                    'href' => config('app.dwolla.url') . "/funding-sources/ee39fec4-02e0-4479-b41a-4245940c4e22" // . $balance_data['bank_uuid']
+                ],
+            ],
+            'amount' => [
+                'currency' => 'USD',
+                'value' => $balance_data['balance_amount']
+            ]
+        ];
+        // dd($transfer_request);
+        $transferApi = new DwollaSwagger\TransfersApi($this->apiClient);
+        $transferApi->create($transfer_request);
+    }
 }

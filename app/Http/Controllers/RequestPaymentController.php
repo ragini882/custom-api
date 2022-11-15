@@ -7,6 +7,9 @@ use App\Http\Requests\CreateConversionRequest;
 use App\Http\Requests\RateRequest;
 use App\Http\Requests\BeneficiaryRequest;
 use App\Http\Requests\InternationalPaymentRequest;
+use App\Http\Requests\PaymentRequestDetail;
+use App\Http\Requests\CCBalanceRequest;
+use App\Http\Requests\WithdrawBalanceRequest;
 use App\Models\User;
 use App\Models\UserDwollaAccount;
 use App\Models\PaymentRequest;
@@ -76,9 +79,24 @@ class RequestPaymentController extends Controller
         return $this->sendSuccessResponse('Beneficiary successfully created.', $beneficiary);
     }
 
-    public function createPayment(InternationalPaymentRequest $request)
+    public function getBalanceCurrencyCloud(CCBalanceRequest $request)
+    {
+        $user = auth()->user();
+        $payment = $this->BalanceCurrencyCloud($request->all());
+        return $this->sendSuccessResponse('Balance get.', $payment);
+    }
+
+    public function createPayment(PaymentRequestDetail $request)
     {
         $user = auth()->user();
         $payment = $this->createPaymentDetail($request->all());
+        return $this->sendSuccessResponse('Payment successfully created.', $payment);
+    }
+
+    public function transferVerifyToReceiveOnly(WithdrawBalanceRequest $request)
+    {
+        $auth_user = auth()->user();
+        $this->transferVerifyBankToReceiveOnlyBank($auth_user->userAccount, $request->all());
+        return $this->sendSuccessResponse('Balance transfer to user successfully.');
     }
 }

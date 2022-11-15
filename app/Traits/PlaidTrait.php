@@ -31,6 +31,7 @@ trait PlaidTrait
 
     public function createAccessToken($public_token)
     {
+        //dd(config('app.plaid.secret'));
         $response = Http::withHeaders([
             'Content-Type' => 'application/json'
         ])->post(config('app.plaid.url') . '/item/public_token/exchange', [
@@ -38,6 +39,7 @@ trait PlaidTrait
             'secret' => config('app.plaid.secret'),
             'public_token' => $public_token
         ]);
+        dd($response);
         if ($response->successful()) {
             return $response->object();
         } else {

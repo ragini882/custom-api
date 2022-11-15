@@ -31,6 +31,7 @@ return new class extends Migration
             $table->string('routing_code_type_1');
             $table->string('routing_code_value_1');
             $table->string('iban');
+            $table->timestamps();
         });
     }
 
