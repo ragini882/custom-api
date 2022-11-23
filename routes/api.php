@@ -28,6 +28,7 @@ Route::prefix('v1')->group(function () {
         Route::post('send-otp', [AuthController::class, 'sendOtp']);
         Route::post('verify-otp', [AuthController::class, 'verifyOtp']);
         Route::post('reset-password', [AuthController::class, 'resetPassword']);
+        Route::post('profile-image', [CustomerAccountController::class, 'profileImage']);
 
         Route::post('get-user-detail', [CustomerAccountController::class, 'userDetail']);
 
@@ -51,18 +52,21 @@ Route::prefix('v1')->group(function () {
         Route::post('group/contribute', [GroupController::class, 'contributeAmount']);
         Route::post('group/withdraw-amount', [GroupController::class, 'withdrawGroupAmount']);
 
+        //Request
         Route::post('request-payment', [RequestPaymentController::class, 'requestPayment']);
+        Route::post('accept-request', [RequestPaymentController::class, 'acceptRequest']);
+        Route::post('reject-request', [RequestPaymentController::class, 'rejectRequest']);
         Route::post('get-request-payment', [RequestPaymentController::class, 'getRequestPayment']);
+        Route::POST('getRate', [RequestPaymentController::class, 'fetchRate']);
         Route::post('transferVerifyToReceiveOnly', [RequestPaymentController::class, 'transferVerifyToReceiveOnly']);
+        //scan QR code
+        Route::post('scan-qr-transfer-amount', [ScanController::class, 'scanQrTransferAmount']);
     });
     Route::post('get-currency-account', [RequestPaymentController::class, 'convert']);
-    Route::POST('getRate', [RequestPaymentController::class, 'fetchRate']);
     Route::POST('createConversion', [RequestPaymentController::class, 'createConversion']);
     Route::POST('createBeneficiary', [RequestPaymentController::class, 'createBeneficiary']);
     Route::POST('createPayment', [RequestPaymentController::class, 'createPayment']);
     Route::POST('balance', [RequestPaymentController::class, 'getBalanceCurrencyCloud']);
-
-
 
     Route::post('webhook/dwolla-status', [DwollaWebhookController::class, 'webhookRequest']);
 });

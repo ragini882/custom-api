@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('from_account_id')->unsigned();
             $table->bigInteger('to_account_id')->unsigned();
-            $table->enum('status', ['PENDING', 'COMPLETED', 'CANCELLED'])->default('PENDING');
+            $table->enum('status', ['PENDING', 'ACCEPTED', 'REJECTED'])->default('PENDING');
             $table->string('note');
             $table->decimal('amount', 10, 2, true)->default(0);
             $table->timestamps();

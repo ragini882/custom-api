@@ -7,6 +7,7 @@ use App\Http\Requests\AddBankRequest;
 use App\Http\Requests\AddBalanceRequest;
 use App\Http\Requests\WithdrawBalanceRequest;
 use App\Http\Requests\GroupRequest;
+use App\Http\Requests\ProfileImageRequest;
 use App\Models\User;
 use App\Models\UserAccount;
 use App\Models\UserBank;
@@ -21,6 +22,17 @@ use Illuminate\Support\Facades\Log;
 class CustomerAccountController extends Controller
 {
     use ResponseTrait, DwollaTrait, PlaidTrait, CurrencyCloudTrait;
+
+    public function profileImage(ProfileImageRequest $request)
+    {
+        $auth_user = auth()->user();
+        $image_path = $request->file('image')->store('image', 'public');
+        $user_image = User::where('id', $auth_user->id)->first();
+        $user_image->image = $image_path;
+        $user_image->save();
+        $user_image->image = asset('storage/' . $image_path);
+        return $this->sendSuccessResponse('Profile image upload successfully', $user_image);
+    }
 
     public function createDwollaAccount(DwollaAccountRequest $request)
     {

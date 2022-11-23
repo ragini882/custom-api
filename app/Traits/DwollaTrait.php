@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use DwollaSwagger;
+use App\Models\UserAccount;
 
 trait DwollaTrait
 {
@@ -103,6 +104,29 @@ trait DwollaTrait
             $bank_list[$key]['created'] = $bank->created;
             $bank_list[$key]['removed'] = $bank->removed;
             $bank_list[$key]['channels'] = $bank->channels;
+        }
+        return $bank_list;
+    }
+
+    private function getStorePaymentMethodBank($user_account)
+    {
+        $this->init();
+        $customerUrl = config('app.dwolla.url') . "/customers/" . $user_account->customer_uuid;
+        $fsApi = new DwollaSwagger\FundingsourcesApi($this->apiClient);
+        $fundingSources = $fsApi->getCustomerFundingSources($customerUrl);
+        $funding_data = $fundingSources->_embedded->{'funding-sources'};
+        $bank_list = [];
+        foreach ($funding_data as $key => $bank) {
+            if ($bank->type != "balance") {
+                $bank_list[$key]['uuid'] = $bank->id;
+                $bank_list[$key]['status'] = $bank->status;
+                $bank_list[$key]['type'] = $bank->type;
+                $bank_list[$key]['bankAccountType'] = $bank->bankAccountType ?? '';
+                $bank_list[$key]['name'] = $bank->name;
+                $bank_list[$key]['created'] = $bank->created;
+                $bank_list[$key]['removed'] = $bank->removed;
+                $bank_list[$key]['channels'] = $bank->channels;
+            }
         }
         return $bank_list;
     }
@@ -271,6 +295,28 @@ trait DwollaTrait
             ]
         ];
         // dd($transfer_request);
+        $transferApi = new DwollaSwagger\TransfersApi($this->apiClient);
+        $transferApi->create($transfer_request);
+    }
+
+    public function scanQrTransferAmountToWallet($requestData, $authData)
+    {
+        $this->init();
+        $source = UserAccount::where('customer_uuid', $authData->customer_uuid)->first();
+        $transfer_request = [
+            '_links' => [
+                'source' => [
+                    'href' => config('app.dwolla.url') . "/funding-sources/" . $requestData['bank_uuid']
+                ],
+                'destination' => [
+                    'href' => config('app.dwolla.url') . "/funding-sources/" . $source->balance_account_uuid
+                ],
+            ],
+            'amount' => [
+                'currency' => 'USD',
+                'value' => $requestData['amount']
+            ]
+        ];
         $transferApi = new DwollaSwagger\TransfersApi($this->apiClient);
         $transferApi->create($transfer_request);
     }

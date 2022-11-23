@@ -7,6 +7,7 @@
     "require": {
         "php": "^8.0.2",
         "brick/phonenumber": "^0.4.0",
+        "currency-cloud/client": "^3.6",
         "dwolla/dwollaswagger": "^1.7",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^9.19",
