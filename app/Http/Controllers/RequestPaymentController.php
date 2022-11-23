@@ -6,8 +6,9 @@ use App\Http\Requests\RequestPaymentRequest;
 use App\Http\Requests\CreateConversionRequest;
 use App\Http\Requests\RateRequest;
 use App\Http\Requests\BeneficiaryRequest;
-use App\Http\Requests\InternationalPaymentRequest;
+use App\Http\Requests\AcceptRequest;
 use App\Http\Requests\PaymentRequestDetail;
+use App\Http\Requests\RejectRequest;
 use App\Http\Requests\CCBalanceRequest;
 use App\Http\Requests\WithdrawBalanceRequest;
 use App\Models\User;
@@ -43,6 +44,25 @@ class RequestPaymentController extends Controller
         $auth_user = auth()->user();
         $request_payments = PaymentRequest::with('userAccountTo', 'userAccountFrom')->get();
         return $this->sendSuccessResponse('Request for Payment.', $request_payments);
+    }
+
+    public function acceptRequest(AcceptRequest $request)
+    {
+        $auth_user = auth()->user();
+        $accept = PaymentRequest::where("to_account_id", $request->input("sender_id"))
+            ->orWhere("from_account_id", $auth_user->userAccount->id)->orWhere("id", $request->input("request_id"))->first();
+        $accept->status = "ACCEPTED";
+        return $this->sendSuccessResponse('Accept the Request.', $accept);
+    }
+
+    public function rejectRequest(RejectRequest $request)
+    {
+        $auth_user = auth()->user();
+        $accept = PaymentRequest::where("to_account_id", $request->input("sender_id"))
+            ->orWhere("from_account_id", $auth_user->userAccount->id)->orWhere("id", $request->input("request_id"))->first();
+        $accept->status = "REJECTED";
+
+        return $this->sendSuccessResponse('Rejected the Request.', $accept);
     }
 
     public function fetchRate(RateRequest $request)
