@@ -1,0 +1,7 @@
+IOS_PACKAGE_NAME=com.joyride.leapmobility
+IOS_APP_ID=1639083255
+ANDROID_PACKAGE_NAME=com.joyride.leapmobility
+DEEP_LINK_WEB_API_KEY=AIzaSyBsngEdhSBW3atAz5lf01Okznh75ronBlg
+DEEP_LINK_DOMAIN=https://leapmobility.joyride.tech/
+DEEP_LINK_WEB_LINK=https://joyride.city/
+JOYRIDE_DEV_MAIL_GROUP=dipak@joyride.city
